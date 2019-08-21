@@ -1,0 +1,6 @@
+.locations[]
+ | . + {"lat": (.latitudeE7 / 10000000)}
+ | . + {"lon": (.longitudeE7 / 10000000)}
+ | . + {"location": {"lat": .lat, "lon": .lon}}
+ | del(.latitudeE7,.longitudeE7)
+ | .timestampMs |= ((. |tonumber) / 1000 | strftime($timefmt))
