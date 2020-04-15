@@ -1,11 +1,47 @@
+**Google Takeout Fun**
+
+# Description
+
+This set of tools is designed to visualize your Google Maps Location History
+(a.k.a [Google Maps Timeline](https://www.google.com/maps/timeline)) through
+the ELK-Stack (i.e. storage: ElasticSearch, visualization: Kibana).
+
+This is a proof-of-concept project. It does not serve any big purpose other
+than to provide the ability to play around with storage, aggregation and
+visualization of your location history that was stored in Google Maps - if you
+explicitly enabled it earlier.
+
 # Getting started
+## Prerequisite
+
+In your [Google Account activity settings
+page](https://myaccount.google.com/activitycontrols/location) you have to have
+*Location History* enabled.
+
+**Disclaimer**: This will allow Google to track your physical location on your
+mobile devices. They will store that data and present it to you through their
+[Google Maps Timeline Page](https://www.google.com/maps/timeline)! **Do not use
+this feature unless you are willing to share your 24/7 location data with that
+Company or their partners. Read their official documentation, TOCs and privacy
+statements!** Be aware, you are sacrificing good parts of your privacy. Don't
+even think about enabling this feature on other people's accounts without their
+explicit knowledge and acknowledgement! You have been warned.
+
+We will download that data set in the next step in order to work with it.
+
 ## Get your Data from Google:
 
-https://takeout.google.com/settings/takeout and schedule your "Location
-History" Download in JSON format.
+Head over to [Google Takeout](https://takeout.google.com/settings/takeout) and
+schedule your "Location History" Download in JSON format.
 
-Once it's done, extract the archive and put the 'Location History.json' into
-this project's working directory.
+This will take a while, once it's done you will receive a notification. Download
+the file, extract the archive somewhere. Then put the included
+'Location History.json' into this project's working directory.
+
+*Note*: If your Google account is set to any other language than English, your
+'Location History.json' might be called differently. In German, it's called
+"Standortverlauf.json"
+
 
 ## Set up the whole funnel
 
@@ -22,7 +58,30 @@ touch raw_json
 docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.6.2
 ```
 
-### Option 1: Mapping / Index pattern `locations-*`:
+### Option 1: Everything into one single index `locations`
+
+*Preferred!*
+
+Downside: One index contains A LOT information then, which cannot
+replicate/shard well
+Upside: Quicker queries(?)
+
+
+```
+curl -X PUT "localhost:9200/locations?pretty" -H 'Content-Type: application/json' -d'
+{
+  "mappings": {
+    "properties": {
+      "location": {
+        "type": "geo_point"
+      }
+    }
+  }
+}
+'
+```
+
+### Option 2: Mapping / Index pattern `locations-*`:
 
 Downside: Turned out to be pretty slow in the first experiments
 Upside: Logstash usually does this for logs.
@@ -46,28 +105,6 @@ curl -X PUT "localhost:9200/_template/template_1?pretty" -H 'Content-Type: appli
 '
 ```
 
-### Option 2: Everything into one single index `locations`
-
-*Preferred!*
-
-Downside: One index contains A LOT information then, which cannot
-replicate/shard well
-Upside: Quicker queries(?)
-
-
-```
-curl -X PUT "localhost:9200/locations?pretty" -H 'Content-Type: application/json' -d'
-{
-  "mappings": {
-    "properties": {
-      "location": {
-        "type": "geo_point"
-      }
-    }
-  }
-}
-'
-```
 
 ### Launch Logstash
 
@@ -101,8 +138,10 @@ Logstash will automatically pick it up once it's there.
 
 Go to http://localhost:5601 and open Kibana in your browser. Go to the
 administration panel and create an *Index Pattern* that matches your index
-treatment selected above (either `locations-*` for Option 1 or `locations` for
-Option 2).
+treatment selected above (either  or `locations` for Option 1 or `locations-*`
+for Option 2) - afterwards select `@timestamp` as the Time Filter field name.
+
+Hit *Create Index Pattern*.
 
 Once you're done, you can start [start
 discovering](http://localhost:5601/app/kibana#/discover/). Mind the selected
