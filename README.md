@@ -19,7 +19,7 @@ touch raw_json
 ### Launch Elasticsearch:
 
 ```
-docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.6.2
 ```
 
 ### Option 1: Mapping / Index pattern `locations-*`:
@@ -76,13 +76,13 @@ following step creates. The contents of this file will be read into
 ElasticSearch once the `raw_json` file gets written.
 
 ```
-docker run --name logstash --rm --workdir=/app --link elasticsearch -v $(pwd):/app -ti docker.elastic.co/logstash/logstash:7.4.0 logstash -f logstash.conf
+docker run --name logstash --rm --workdir=/app --link elasticsearch -v $(pwd):/app -ti docker.elastic.co/logstash/logstash:7.6.2 logstash -f logstash.conf
 ```
 
 ### Launch Kibana
 
 ```
-docker run --rm --link elasticsearch:elasticsearch -p 5601:5601 --name kibana docker.elastic.co/kibana/kibana:7.4.0
+docker run --rm --link elasticsearch:elasticsearch -p 5601:5601 --name kibana docker.elastic.co/kibana/kibana:7.6.2
 ```
 
 ## Turn Google Takeout into `raw_json`
