@@ -1,3 +1,6 @@
 *.json
 raw_json
 README.html
+*.zip
+*.tgz
+Takeout/
