@@ -63,7 +63,7 @@ docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name
 *Preferred!*
 
 Downside: One index contains A LOT information then, which cannot
-replicate/shard well
+replicate/shard well  
 Upside: Quicker queries(?)
 
 
@@ -83,7 +83,7 @@ curl -X PUT "localhost:9200/locations?pretty" -H 'Content-Type: application/json
 
 ### Option 2: Mapping / Index pattern `locations-*`:
 
-Downside: Turned out to be pretty slow in the first experiments
+Downside: Turned out to be pretty slow in the first experiments  
 Upside: Logstash usually does this for logs.
 
 
