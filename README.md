@@ -55,7 +55,7 @@ touch raw_json
 ### Launch Elasticsearch:
 
 ```
-docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+docker run --rm -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.9.0
 ```
 
 ### Option 1: Everything into one single index `locations`
@@ -113,13 +113,13 @@ following step creates. The contents of this file will be read into
 ElasticSearch once the `raw_json` file gets written.
 
 ```
-docker run --name logstash --rm --workdir=/app --link elasticsearch -v $(pwd):/app -ti docker.elastic.co/logstash/logstash:7.6.2 logstash -f logstash.conf
+docker run --name logstash --rm --workdir=/app --link elasticsearch -v $(pwd):/app -ti docker.elastic.co/logstash/logstash:7.9.0 logstash -f logstash.conf
 ```
 
 ### Launch Kibana
 
 ```
-docker run --rm --link elasticsearch:elasticsearch -p 5601:5601 --name kibana docker.elastic.co/kibana/kibana:7.6.2
+docker run --rm --link elasticsearch:elasticsearch -p 5601:5601 --name kibana docker.elastic.co/kibana/kibana:7.9.0
 ```
 
 ## Turn Google Takeout into `raw_json`
@@ -140,6 +140,9 @@ Go to http://localhost:5601 and open Kibana in your browser. Go to the
 administration panel and create an *Index Pattern* that matches your index
 treatment selected above (either  or `locations` for Option 1 or `locations-*`
 for Option 2) - afterwards select `@timestamp` as the Time Filter field name.
+
+In newer Kibana versions that can be done under `Stack Management / Index
+Patterns`.
 
 Hit *Create Index Pattern*.
 
